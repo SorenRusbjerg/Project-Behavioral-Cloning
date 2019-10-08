@@ -44,7 +44,7 @@ crop_out = layers.Cropping2D(cropping=((cropTop, cropBottom), (0, 0)))(model_inp
 resized_input = layers.Lambda(lambda image: tf.image.resize_images(image, (nn_Imgsize, nn_Imgsize)))(crop_out)
 
 # Normalize inputs
-normalized_input = layers.Lambda(lambda image: (image-127.0)/128)(resized_input)
+normalized_input = layers.Lambda(lambda image: (image-127.0)/128.0)(resized_input)
 
 # Connect layers
 deep_nn_out = model_pretrained(normalized_input)
