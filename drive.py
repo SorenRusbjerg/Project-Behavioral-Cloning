@@ -3,7 +3,7 @@ import base64
 from datetime import datetime
 import os
 import shutil
-
+import tensorflow as tf
 import numpy as np
 import socketio
 import eventlet
@@ -11,6 +11,7 @@ import eventlet.wsgi
 from PIL import Image
 from flask import Flask
 from io import BytesIO
+# from model import ResizeNormalizeLambda
 
 from keras.models import load_model
 import h5py
@@ -94,6 +95,12 @@ def send_control(steering_angle, throttle):
         skip_sid=True)
 
 
+def ResizeNormalizeLambda(image):
+    import tensorflow as tf
+    image = tf.image.resize_images(image, (nn_Imgsize, nn_Imgsize))
+    image = (tf.to_float(image)-127.0)/128.0
+    return image
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Remote Driving')
     parser.add_argument(
@@ -119,7 +126,7 @@ if __name__ == '__main__':
         print('You are using Keras version ', keras_version,
               ', but the model was built using ', model_version)
 
-    model = load_model(args.model)
+    model = load_model(args.model, custom_objects={'tf': tf, 'ResizeNormalizeLambda': ResizeNormalizeLambda})
 
     if args.image_folder != '':
         print("Creating image folder at {}".format(args.image_folder))
