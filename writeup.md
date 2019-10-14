@@ -15,12 +15,13 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./examples/model.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image2]: ./examples/Center.jpg "Center driving"
+[image3]: ./examples/Recovery1.jpg "Recovery Image"
+[image4]: ./examples/Recovery2.jpg "Recovery Image"
+[image5]: ./examples/Recovery3.jpg "Recovery Image"
+[image6]: ./examples/TrackTwo.jpg "Normal Image"
+[image7]: ./examples/croppedImage.png "Cropped Images"
+[image8]: ./examples/TrainHistory.png "Training loss"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -50,9 +51,18 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3 convolutional layers with 5x5 and 3x3 filter sizes and depths at 8, 32 and 64 featuremaps.  
+My model consists of a input layers, convolutional layers and dense layers.
 
-The model includes RELU layers to introduce nonlinearity, and the data is normalized in the model using a Keras lambda layer. The model ends in three dense layers of 1024, 256 and 12 neurons.   
+**Input layers**
+ Input is first cropped top/bottom to suiteable size without car front and top landscape. The input is then normalized and resized to 128x128 using a Keras lambda layer, to decrease the image resolution before conv. layers.
+
+**Convolutional layers**
+The model uses a convolution neural network with 3 convolutional layers with 5x5 and 3x3 filter sizes and depths at 8, 32 and 64 featuremaps, with maxpooling layers in between to reduce resolution.    
+
+The model includes RELU layers to introduce nonlinearity, 
+
+**Dense layers**
+The model ends in three dense layers of 1024, 256 and 12 neurons.  
 
 #### 2. Attempts to reduce overfitting in the model
 
@@ -63,7 +73,7 @@ The model was trained and validated on different data sets to ensure that the mo
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually.
+The model used an adam optimizer, with a learning rate lower than default (lr=0.0005) to make sure that the loss would keep decreasing while training.
 
 #### 4. Appropriate training data
 
@@ -96,28 +106,32 @@ The final model architecture (model.py lines 85-114)  is visualized below:
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+To capture good driving behavior, I first recorded two laps on track one using center lane driving. I then ran the track backwards. Here is an example image of center lane driving:
 
 ![alt text][image2]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to recover from the road sides These images show what a recovery looks like starting from a right side recovery:
 
 ![alt text][image3]
 ![alt text][image4]
 ![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+Then I repeated this process on track two in order to get more data points:
 
 ![alt text][image6]
+
+The input images was cropped by the N.N. to get better generalization (left: input; right: cropped):
+
 ![alt text][image7]
 
-Etc ....
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+After the collection process, I had app. 53.500 number of data points. 
+
+I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was in the range of 3 to 7 as evidenced by when the validation loss started to flatten. I retrained the network a couple of times when I got new turning data, and therefore the total number of epochs became higher. 
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+I used an adam optimizer so that manually training the learning rate wasn't necessary, and as it is an effective optimizer. An example of my training process can be seen below:
+
+![alt text][image8]
